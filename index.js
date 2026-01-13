@@ -15,13 +15,13 @@ const app = express();
 
 const PORT = process.env.PORT || 9500;
 
+// Initialize DB connection
 connectDb();
 
 app.use(cookieParser());
-
-app.use(express.json());
-app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use(cors({
     origin: ["http://localhost:5173", "https://medilink-theta-two.vercel.app"],
@@ -30,14 +30,34 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// api end points
+// Health check endpoint for Vercel
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'OK', message: 'Server is running' });
+});
+
+// API endpoints
 app.use("/api/v1/google", userRouter);
 app.use("/api/v1/album", albumRouter);
 app.use("/api/v1/image", imageRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
 
-
-// server started 
-app.listen(PORT, () => {
-    console.log(`server started on http://localhost:${PORT}`);
+// 404 Handler
+app.use((req, res) => {
+    res.status(404).json({ message: 'Route not found' });
 });
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error', error: err.message });
+});
+
+// Local development server
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server started on http://localhost:${PORT}`);
+    });
+}
+
+// Export for Vercel serverless
+export default app;
