@@ -30,6 +30,15 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
+// Default root route
+app.get('/', (req, res) => {
+    res.status(200).json({ 
+        message: 'Medi-Link API Server',
+        version: '1.0.0',
+        status: 'Running'
+    });
+});
+
 // Health check endpoint for Vercel
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'Server is running' });
