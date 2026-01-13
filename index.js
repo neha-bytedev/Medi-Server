@@ -24,7 +24,7 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use(cors({
-    origin: ["http://localhost:5173", "https://medilink-theta-two.vercel.app"],
+    origin: "https://medilink-theta-two.vercel.app",
     credentials: true,
     methods: "GET,POST,PUT,DELETE",
     allowedHeaders: ["Content-Type", "Authorization"]
